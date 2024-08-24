@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  backend:
+    build: ./backend
+    container_name: django_backend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DEBUG=1
+
+  frontend:
+    build: ./frontend
+    container_name: react_frontend
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000/api
+
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=your_db
+      - POSTGRES_USER=your_user
+      - POSTGRES_PASSWORD=your_password
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
